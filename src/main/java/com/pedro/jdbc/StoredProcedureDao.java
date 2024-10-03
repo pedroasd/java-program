@@ -90,8 +90,9 @@ public class StoredProcedureDao {
         var rs = stmt.executeQuery(sql);
         List<String> procedures = new ArrayList<>();
         while (rs.next()) {
-            procedures.add(rs.getString(2));}
-            System.out.println("Store Procedure: " + rs.getString(2));
+            procedures.add(rs.getString(2));
+            System.out.println("Stored Procedure: " + rs.getString(2));
+        }
         return procedures;
     }
 
