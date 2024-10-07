@@ -19,7 +19,7 @@ public class App {
             var databaseSetup = new DatabaseSetup(connection);
             databaseSetup.initialize();
 
-            var fileDAO = new FileDao(connection);
+            FileDao fileDAO = new FileDaoImpl(connection);
 
             // Save a file
             String filePath = "/home/pedro-salazar/Downloads/bigFile.zip";
