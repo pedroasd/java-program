@@ -2,7 +2,7 @@
 
 1. DB schema diagram is provided
 
-    | Center Files     |
+    | Files            |
     |------------------|
     | id (PK)          |
     | name             |
