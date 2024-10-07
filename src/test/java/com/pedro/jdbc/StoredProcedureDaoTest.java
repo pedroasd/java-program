@@ -28,11 +28,13 @@ class StoredProcedureDaoTest {
 			dao.createTables();
 			assertEquals(0, dao.getStoredProcedures().size());
 
-			dao.createStoredProcedures();
-			assertEquals(7, dao.getStoredProcedures().size());
+			dao.createCRUDStoredProcedures();
+			dao.createQueryStoredProcedures();
+			var createdProcedures = dao.getStoredProcedures();
+			assertEquals(7, createdProcedures.size());
 
-			dao.dropStoredProcedures();
-			assertEquals(3, dao.getStoredProcedures().size());
+			dao.dropStoredProcedures(createdProcedures);
+			assertEquals(0, dao.getStoredProcedures().size());
 		}
     }
 
@@ -53,7 +55,7 @@ class StoredProcedureDaoTest {
 		try(Connection connection = DriverManager.getConnection(database.getJdbcUrl(), database.getUsername(), database.getPassword())) {
 			StoredProcedureDao dao = new StoredProcedureDao(connection);
 			dao.createTables();
-			dao.createStoredProcedures();
+			dao.createCRUDStoredProcedures();
 			dao.addUserProcedure("Pedro", "pedro@example.com", Date.valueOf(LocalDate.now()));
 			StoredProcedureDao.User user = dao.getUserProcedure(1);
 			Assertions.assertNotNull(user);

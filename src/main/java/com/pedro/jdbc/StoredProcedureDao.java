@@ -96,8 +96,7 @@ public class StoredProcedureDao {
         return procedures;
     }
 
-    public void dropStoredProcedures() throws SQLException {
-        String[] procedures = {"AddUser", "GetUser", "UpdateUser", "DeleteUser"};
+    public void dropStoredProcedures(List<String> procedures) throws SQLException {
         for (String proc : procedures) {
             try (Statement stmt = connection.createStatement()) {
                 stmt.execute("DROP PROCEDURE IF EXISTS " + proc);
@@ -105,7 +104,7 @@ public class StoredProcedureDao {
         }
     }
 
-    public void createStoredProcedures() throws SQLException {
+    public void createCRUDStoredProcedures() throws SQLException {
         String[] procedures = {
                 "CREATE PROCEDURE AddUser(IN p_name VARCHAR(255), IN p_surname VARCHAR(255), IN p_birthdate DATE) " +
                         "BEGIN INSERT INTO Users (name, surname, birthdate) VALUES (p_name, p_surname, p_birthdate); END;",
@@ -121,7 +120,17 @@ public class StoredProcedureDao {
 
                 "CREATE PROCEDURE AddPost(IN p_userId INT, IN p_text TEXT, IN p_timestamp TIMESTAMP) " +
                         "BEGIN INSERT INTO Posts (userId, text, timestamp) VALUES (p_userId, p_text, p_timestamp); END;",
+        };
 
+        try (Statement stmt = connection.createStatement()) {
+            for (String proc : procedures) {
+                stmt.execute(proc);
+            }
+        }
+    }
+
+    public void createQueryStoredProcedures() throws SQLException {
+        String[] procedures = {
                 "CREATE PROCEDURE UserPostCountReport() " +
                         "BEGIN SELECT u.id, u.name, COUNT(p.id) AS post_count FROM Users u LEFT JOIN Posts p ON u.id = p.userId GROUP BY u.id; END;",
 
