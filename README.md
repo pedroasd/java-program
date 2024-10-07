@@ -2,15 +2,13 @@
 
 1. DB schema diagram is provided
 
-    +------------------+
     |     files        |
-    +------------------+
+    |------------------|
     | id (PK)          |
     | name             |
     | file_data        | 
     | upload_date      |
-    | expiration_date  |
-    +------------------+
+    | expiration_date  |    
 
     
 2. Stored procedures for saving and retrieving files from DB are created
