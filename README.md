@@ -1,4 +1,4 @@
-# File Sharing - Practical Task 7
+# Task 7 - File Sharing
 
 1. DB schema diagram is provided
 
