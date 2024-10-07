@@ -35,6 +35,9 @@ class StoredProcedureDaoTest {
 
 			dao.dropStoredProcedures(createdProcedures);
 			assertEquals(0, dao.getStoredProcedures().size());
+
+			dao.createCRUDStoredProcedures();
+			assertEquals(5, dao.getStoredProcedures().size());
 		}
     }
 
