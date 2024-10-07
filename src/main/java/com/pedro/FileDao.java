@@ -6,7 +6,7 @@ import java.sql.*;
 public interface FileDao {
     void saveFile(String fileName, InputStream fileData, Timestamp expirationDate) throws SQLException;
     FileDaoImpl.File getFile(String fileName) throws SQLException;
-    void deleteFile(int id) throws UnsupportedOperationException;
+    void deleteFile(int id) throws SQLException;
 }
 
 
