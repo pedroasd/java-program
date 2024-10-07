@@ -22,8 +22,8 @@ public class App {
             var fileDAO = new FileDao(connection);
 
             // Save a file
-            String filePath = "/home/pedro-salazar/Downloads/icaclient_24.5.0.76_amd64.deb";
-            var fileName = "largefile.txt";
+            String filePath = "/home/pedro-salazar/Downloads/bigFile.zip";
+            var fileName = "bigFile.zip";
             try (InputStream fileInputStream = new FileInputStream(filePath)) {
                 fileDAO.saveFile(fileName, fileInputStream, null);
                 System.out.println("File saved.");
@@ -33,7 +33,7 @@ public class App {
 
             // Get file
             var file = fileDAO.getFile(fileName);
-            if (file != null) {
+            if (file != null && file.data() != null) {
                 System.out.println("Stored file: " + file.name());
             } else {
                 System.out.println("File not found.");

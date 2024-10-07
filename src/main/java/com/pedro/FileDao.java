@@ -5,7 +5,7 @@ import java.sql.*;
 
 public class FileDao {
 
-    public record File(String name, InputStream data){}
+    public record File(String name, byte[] data){}
 
     private Connection connection;
 
@@ -30,11 +30,14 @@ public class FileDao {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 String name = rs.getString("name");
-                Blob blob = rs.getBlob("file_data");
-                InputStream inputStream = blob.getBinaryStream();
-                return new File(name, inputStream);
+                byte[] data = rs.getBytes("file_data");
+                return new File(name, data);
             }
         }
         return null;
+    }
+
+        public void deleteFile(int id) {
+        throw new UnsupportedOperationException("Delete operation is not supported.");
     }
 }
