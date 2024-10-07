@@ -27,7 +27,7 @@
   
 To run the application in the root path of the project:
 
-1. Run ´docker compose up´. It start up a MySQL database that support files up to 200MB according to [the database configuration](https://github.com/pedroasd/java-program/blob/m03-jdbc-4/my.cnf).
+1. Run `docker compose up`. It start up a MySQL database that support files up to 200MB according to [the database configuration](https://github.com/pedroasd/java-program/blob/m03-jdbc-4/my.cnf).
 2. Set the full path of the file that you want to store [here](https://github.com/pedroasd/java-program/blob/m03-jdbc-4/src/main/java/com/pedro/App.java#L25).
 3. Then run the application [App](https://github.com/pedroasd/java-program/blob/m03-jdbc-4/src/main/java/com/pedro/App.java).
 
