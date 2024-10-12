@@ -232,4 +232,9 @@ public class BookingFacadeImpl implements BookingFacade {
     public UserAccount refillAccount(long userId, Long amount) {
         return userAccountService.refillAccount(userId, amount);
     }
+
+    @Override
+    public UserAccount getUserAccount(long userId) {
+        return userAccountService.getUserAccount(userId);
+    }
 }

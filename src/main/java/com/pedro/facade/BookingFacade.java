@@ -147,4 +147,11 @@ public interface BookingFacade {
      * @return User Account refilled.
      */
     UserAccount refillAccount(long userId, Long amount);
+
+    /**
+     * Get user account information by user id.
+     * @param userId User id
+     * @return User Account information
+     */
+    UserAccount getUserAccount(long userId);
 }

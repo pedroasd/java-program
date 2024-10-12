@@ -98,5 +98,10 @@ public class BookingTest {
 
         var exception = assertThrows( IllegalStateException.class , () -> booking.bookTicket(user.getId(), event2.getId(), 5, Ticket.Category.PREMIUM));
         assertEquals(new IllegalStateException("Insufficient funds to book this ticket.").getMessage(), exception.getMessage());
+
+        var userAccount = booking.getUserAccount(user.getId());
+        assertEquals(10L, userAccount.getBalance());
+        assertEquals(1, userTickets.size());
+        assertEquals(ticket1, userTickets.get(0));
     }
 }
