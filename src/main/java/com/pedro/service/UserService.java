@@ -4,7 +4,7 @@ import com.pedro.dao.UserDAO;
 import com.pedro.model.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,8 +14,11 @@ public class UserService {
 
     private final Log log = LogFactory.getLog(UserService.class);
 
-    @Autowired
     private UserDAO userDAO;
+
+    public UserService(UserDAO userDAO) {
+        this.userDAO = userDAO;
+    }
 
     /**
      * Gets user by its id.
@@ -23,7 +26,7 @@ public class UserService {
      * @return User.
      */
     public User getUserById(long userId) {
-        return userDAO.get(userId);
+        return userDAO.findById(userId).orElse(null);
     }
 
     /**
@@ -32,7 +35,7 @@ public class UserService {
      * @return User.
      */
     public User getUserByEmail(String email) {
-        return userDAO.getFirstBy(u -> u.getEmail().equals(email));
+        return userDAO.findFirstByEmail(email).orElse(null);
     }
 
     /**
@@ -45,7 +48,9 @@ public class UserService {
      * @return List of users.
      */
     public List<User> getUsersByName(String name, int pageSize, int pageNum) {
-        return userDAO.getPageBy(u -> u.getName().toLowerCase().contains(name.toLowerCase()), pageSize, pageNum);
+        var a = userDAO.findAll();
+        var b = userDAO.findAllByNameIgnoreCaseContains(name, PageRequest.of(pageNum - 1, pageSize)).getContent();
+        return userDAO.findAllByNameIgnoreCaseContains(name, PageRequest.of(pageNum - 1, pageSize)).getContent();
     }
 
     /**
@@ -55,7 +60,7 @@ public class UserService {
      * @return Created User object.
      */
     public User createUser(User user) {
-        var createdUser = userDAO.store(user, User::setId);
+        var createdUser = userDAO.save(user);
         log.info("User name: " + user.getName() + " was created with id: " + createdUser.getId());
         return createdUser;
     }
@@ -67,7 +72,7 @@ public class UserService {
      * @return Updated User object.
      */
     public User updateUser(User user) {
-        var updatedUser = userDAO.update(user.getId(), user);
+        var updatedUser = userDAO.save(user);
         log.info("User name: " + user.getName() + " was update with id: " + user.getId());
         return updatedUser;
     }
@@ -79,8 +84,10 @@ public class UserService {
      * @return Flag that shows whether user has been deleted.
      */
     public boolean deleteUser(long userId) {
-        var isDeleted = userDAO.delete(userId);
-        if (isDeleted) log.info("User id: " + userId + " was deleted.");
-        return isDeleted;
+        return userDAO.findById(userId).map(e -> {
+            userDAO.deleteById(userId);
+            log.info("User id: " + userId + " was deleted.");
+            return true;
+        }).orElse(false);
     }
 }

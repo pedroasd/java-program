@@ -1,20 +1,16 @@
 package com.pedro.service;
 
 import com.pedro.model.Event;
-import com.pedro.model.impl.EventImpl;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(locations = "/context-config.xml")
+@SpringBootTest
 public class EventServiceTest {
 
     @Autowired
@@ -22,7 +18,7 @@ public class EventServiceTest {
 
     @Test
     public void create(){
-        Event event = new EventImpl("Java program", new Date("2024/08/17 12:00:00"));
+        Event event = new Event("Java program", new Date("2024/08/17 12:00:00"), 10L);
         var createdEvent = eventService.createEvent(event);
         event.setId(createdEvent.getId());
         assertTrue(createdEvent.getId() > 0);
@@ -33,16 +29,16 @@ public class EventServiceTest {
     @Test
     public void update(){
         var date = new Date("2024/08/17 12:00:00");
-        Event event = new EventImpl("Java program", date);
+        Event event = new Event("Java program", date, 20L);
         var createdEvent = eventService.createEvent(event);
-        var updatedEvent = eventService.updateEvent(new EventImpl(createdEvent.getId(), "Java community", date));
+        var updatedEvent = eventService.updateEvent(new Event(createdEvent.getId(), "Java community", date, 10L));
         var storedEvent = eventService.getEventById(createdEvent.getId());
         assertEquals(updatedEvent, storedEvent);
     }
 
     @Test
     public void delete(){
-        Event event = new EventImpl("Java program", new Date("2024/08/17 12:00:00"));
+        Event event = new Event("Java program", new Date("2024/08/17 12:00:00"), 10L);
         var createdEvent = eventService.createEvent(event);
         var storedEvent = eventService.getEventById(createdEvent.getId());
         assertEquals(createdEvent, storedEvent);
@@ -54,10 +50,10 @@ public class EventServiceTest {
 
     @Test
     public void list(){
-        var e1 = eventService.createEvent(new EventImpl("Java program", new Date("2024/08/17 12:00:00")));
-        var e2 = eventService.createEvent(new EventImpl("Java community", new Date("2024/09/18 12:00:00")));
-        var e3 = eventService.createEvent(new EventImpl("Functional Java community", new Date("2024/09/17 12:00:00")));
-        var e4 = eventService.createEvent(new EventImpl("Python community", new Date("2024/09/17 12:00:00")));
+        var e1 = eventService.createEvent(new Event("Java program", new Date("2024/08/17 12:00:00"), 10L));
+        var e2 = eventService.createEvent(new Event("Java community", new Date("2024/09/18 12:00:00"), 20L));
+        var e3 = eventService.createEvent(new Event("Functional Java community", new Date("2024/09/17 12:00:00"), 30L));
+        var e4 = eventService.createEvent(new Event("Python community", new Date("2024/09/17 12:00:00"), 40L));
 
         var javaEvents = eventService.getEventsByTitle("java", 5, 1);
         assertTrue(javaEvents.containsAll(List.of(e1, e2, e3)));

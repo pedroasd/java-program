@@ -1,30 +1,17 @@
 package com.pedro.dao;
 
-import com.pedro.model.impl.TicketImpl;
-import jakarta.annotation.PostConstruct;
+import com.pedro.model.Event;
 import com.pedro.model.Ticket;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Value;
+import com.pedro.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class TicketDAO extends DAO<Ticket> {
+public interface TicketDAO extends JpaRepository<Ticket, Long> {
 
-    private final Log log = LogFactory.getLog(TicketDAO.class);
+    Page<Ticket> findAllByUser(User user, Pageable pageable);
 
-    @Value("${data.tickets}")
-    private String dataFile;
-
-    @PostConstruct
-    public void init(){
-        loadData(dataFile, Ticket::setId);
-        log.info(data.size() + " tickets were loaded from " + dataFile);
-    }
-
-    @Override
-    protected Ticket from(String fileLine) {
-        var data = fileLine.split(",");
-        return new TicketImpl(Long.parseLong(data[0]),Long.parseLong(data[1]), Ticket.Category.valueOf(data[2].toUpperCase()), Integer.parseInt(data[3]));
-    }
+    Page<Ticket> findAllByEvent(Event event, Pageable pageable);
 }

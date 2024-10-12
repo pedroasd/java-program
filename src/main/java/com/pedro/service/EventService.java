@@ -4,7 +4,7 @@ import com.pedro.dao.EventDAO;
 import com.pedro.model.Event;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -15,15 +15,18 @@ public class EventService {
 
     private final Log log = LogFactory.getLog(EventService.class);
 
-    @Autowired
     private EventDAO eventDAO;
+
+    public EventService(EventDAO eventDAO) {
+        this.eventDAO = eventDAO;
+    }
 
     /**
      * Gets event by its id.
      * @return Event.
      */
     public Event getEventById(long id) {
-        return eventDAO.get(id);
+        return eventDAO.findById(id).orElse(null);
     }
 
     /**
@@ -35,7 +38,7 @@ public class EventService {
      * @return List of events.
      */
     public List<Event> getEventsByTitle(String title, int pageSize, int pageNum) {
-        return eventDAO.getPageBy(e -> e.getTitle().toLowerCase().contains(title.toLowerCase()), pageSize, pageNum);
+        return eventDAO.findAllByTitleIgnoreCaseContains(title, PageRequest.of(pageNum - 1, pageSize)).getContent();
     }
 
     /**
@@ -48,7 +51,7 @@ public class EventService {
      * @return List of events.
      */
     public List<Event> getEventsForDay(Date day, int pageSize, int pageNum) {
-        return eventDAO.getPageBy(e -> e.getDate().equals(day), pageSize, pageNum);
+        return eventDAO.findAllByDate(day, PageRequest.of(pageNum - 1, pageSize)).getContent();
     }
 
     /**
@@ -58,7 +61,7 @@ public class EventService {
      * @return Created Event object.
      */
     public Event createEvent(Event event) {
-        var createdEvent = eventDAO.store(event, Event::setId);
+        var createdEvent = eventDAO.save(event);
         log.info("Event: " + event.getTitle() + " was created with id: " + event.getId());
         return createdEvent;
     }
@@ -70,7 +73,7 @@ public class EventService {
      * @return Updated Event object.
      */
     public Event updateEvent(Event event) {
-        var updatedEvent = eventDAO.update(event.getId(), event);
+        var updatedEvent = eventDAO.save(event);
         log.info("Event: " + updatedEvent.getTitle() + " was update with id: " + event.getId());
         return updatedEvent;
     }
@@ -82,8 +85,10 @@ public class EventService {
      * @return Flag that shows whether event has been deleted.
      */
     public boolean deleteEvent(long eventId) {
-        var isDeleted = eventDAO.delete(eventId);
-        if (isDeleted) log.info("Event id: " + eventId + " was deleted.");
-        return isDeleted;
+        return eventDAO.findById(eventId).map(e -> {
+            eventDAO.deleteById(eventId);
+            log.info("Event id: " + eventId + " was deleted.");
+            return true;
+        }).orElse(false);
     }
 }

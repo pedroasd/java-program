@@ -1,13 +1,15 @@
 package com.pedro.service;
 
+import com.pedro.dao.EventDAO;
 import com.pedro.dao.TicketDAO;
+import com.pedro.dao.UserDAO;
 import com.pedro.model.Event;
 import com.pedro.model.Ticket;
 import com.pedro.model.User;
-import com.pedro.model.impl.TicketImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,8 +19,17 @@ public class TicketService {
 
     private final Log log = LogFactory.getLog(TicketService.class);
 
-    @Autowired
     private TicketDAO ticketDAO;
+
+    private EventDAO eventDAO;
+
+    private UserDAO userDAO;
+
+    public TicketService(TicketDAO ticketDAO, EventDAO eventDAO, UserDAO userDAO) {
+        this.ticketDAO = ticketDAO;
+        this.eventDAO = eventDAO;
+        this.userDAO = userDAO;
+    }
 
     /**
      * Book ticket for a specified event on behalf of specified user.
@@ -31,7 +42,9 @@ public class TicketService {
      * @throws java.lang.IllegalStateException if this place has already been booked.
      */
     public Ticket bookTicket(long userId, long eventId, int place, Ticket.Category category) {
-        var ticket = ticketDAO.store(new TicketImpl(eventId, userId, category, place), Ticket::setId);
+        var user = userDAO.findById(userId).orElse(null);
+        var event = eventDAO.findById(eventId).orElse(null);
+        var ticket = ticketDAO.save(new Ticket(user, event, place, category));
         log.info("Ticket booked for user: " + userId + " with id: " + ticket.getId());
         return ticket;
     }
@@ -45,7 +58,7 @@ public class TicketService {
      * @return List of Ticket objects.
      */
     public List<Ticket> getBookedTickets(User user, int pageSize, int pageNum) {
-        return ticketDAO.getPageBy(t -> t.getUserId() == user.getId(), pageSize, pageNum);
+        return ticketDAO.findAllByUser(user, PageRequest.of(pageNum - 1, pageSize)).getContent();
     }
 
     /**
@@ -57,7 +70,7 @@ public class TicketService {
      * @return List of Ticket objects.
      */
     public List<Ticket> getBookedTickets(Event event, int pageSize, int pageNum) {
-        return ticketDAO.getPageBy(t -> t.getEventId() == event.getId(), pageSize, pageNum);
+        return ticketDAO.findAllByEvent(event, PageRequest.of(pageNum - 1, pageSize)).getContent();
     }
 
     /**
@@ -67,8 +80,10 @@ public class TicketService {
      * @return Flag whether anything has been canceled.
      */
     public boolean cancelTicket(long ticketId) {
-        var isCanceled = ticketDAO.delete(ticketId);
-        if (isCanceled) log.info("Ticket id: " + ticketId + " was canceled.");
-        return isCanceled;
+        return ticketDAO.findById(ticketId).map(e -> {
+            ticketDAO.deleteById(ticketId);
+            log.info("Ticket id: " + ticketId + " was canceled.");
+            return true;
+        }).orElse(false);
     }
 }

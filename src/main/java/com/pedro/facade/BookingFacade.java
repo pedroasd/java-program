@@ -3,6 +3,7 @@ package com.pedro.facade;
 import com.pedro.model.Event;
 import com.pedro.model.Ticket;
 import com.pedro.model.User;
+import com.pedro.model.UserAccount;
 
 import java.util.Date;
 import java.util.List;
@@ -139,4 +140,11 @@ public interface BookingFacade {
      */
     boolean cancelTicket(long ticketId);
 
+    /**
+     * Refill a user account.
+     * @param userId User id
+     * @param amount Amount to refill.
+     * @return User Account refilled.
+     */
+    UserAccount refillAccount(long userId, Long amount);
 }

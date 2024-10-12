@@ -3,10 +3,13 @@ package com.pedro.facade;
 import com.pedro.model.Event;
 import com.pedro.model.Ticket;
 import com.pedro.model.User;
+import com.pedro.model.UserAccount;
 import com.pedro.service.EventService;
 import com.pedro.service.TicketService;
+import com.pedro.service.UserAccountService;
 import com.pedro.service.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -20,11 +23,13 @@ public class BookingFacadeImpl implements BookingFacade {
     private final EventService eventService;
     private final TicketService ticketService;
     private final UserService userService;
+    private final UserAccountService userAccountService;
 
-    public BookingFacadeImpl(EventService eventService, TicketService ticketService, UserService userService) {
+    public BookingFacadeImpl(EventService eventService, TicketService ticketService, UserService userService, UserAccountService userAccountService) {
         this.eventService = eventService;
         this.ticketService = ticketService;
         this.userService = userService;
+        this.userAccountService = userAccountService;
     }
 
     /**
@@ -141,7 +146,9 @@ public class BookingFacadeImpl implements BookingFacade {
      */
     @Override
     public User createUser(User user) {
-        return userService.createUser(user);
+        User created = userService.createUser(user);
+        userAccountService.createUserAccount(user);
+        return created;
     }
 
     /**
@@ -177,7 +184,10 @@ public class BookingFacadeImpl implements BookingFacade {
      * @throws IllegalStateException if this place has already been booked.
      */
     @Override
+    @Transactional
     public Ticket bookTicket(long userId, long eventId, int place, Ticket.Category category) {
+        var event = eventService.getEventById(eventId);
+        userAccountService.withdrawMoney(userId, event.getTicketPrice());
         return ticketService.bookTicket(userId, eventId, place, category);
     }
 
@@ -216,5 +226,10 @@ public class BookingFacadeImpl implements BookingFacade {
     @Override
     public boolean cancelTicket(long ticketId) {
         return ticketService.cancelTicket(ticketId);
+    }
+
+    @Override
+    public UserAccount refillAccount(long userId, Long amount) {
+        return userAccountService.refillAccount(userId, amount);
     }
 }
