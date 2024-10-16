@@ -27,6 +27,12 @@ public class Ticket {
     @Enumerated(EnumType.STRING)
     private Category category;
 
+    @Transient
+    private Long userId;
+
+    @Transient
+    private Long eventId;
+
     public Ticket() {
     }
 
@@ -84,6 +90,22 @@ public class Ticket {
 
     public void setPlace(int place) {
         this.place = place;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(Long eventId) {
+        this.eventId = eventId;
     }
 
     @Override

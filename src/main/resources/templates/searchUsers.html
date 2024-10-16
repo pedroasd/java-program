@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Search Users</title>
+
+</head>
+<body>
+<div th:replace="~{menu :: menuContent}"></div>
+
+<h2>Search Users by Name</h2>
+
+<form th:action="@{/users}" method="get">
+    <label for="name">User Name:</label>
+    <input type="text" id="name" name="name" placeholder="Enter user name" required />
+    <button type="submit">Search</button>
+</form>
+
+<div th:if="${users != null}">
+    <h3 th:text="'Search Results for: ' + ${searchName}"></h3>
+    <ul>
+        <li th:each="user : ${users}">
+            <span th:text="${user.id}"></span> -
+            <span th:text="${user.name}"></span> -
+            <span th:text="${user.email}"></span>
+            <a th:href="@{/refillAccount(userId=${user.id})}" class="button">
+                Refill Account
+            </a>
+        </li>
+    </ul>
+    <p th:if="${users.size()} == 0">No users found.</p>
+</div>
+</body>
+</html>

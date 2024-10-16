@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Create Event</title>
+</head>
+<body>
+<div th:replace="~{menu :: menuContent}"></div>
+<h2>Create a New Event</h2>
+<form th:action="@{/events}" th:object="${event}" method="post">
+    <label for="title">Title:</label>
+    <input type="text" id="title" th:field="*{title}" placeholder="Enter event title" required/>
+    <br/>
+
+    <label for="date">Date:</label>
+    <input type="date" id="date" th:field="*{eventDate}" required/>
+    <br/>
+
+    <label for="ticketPrice">Ticket Price:</label>
+    <input type="text" id="ticketPrice" th:field="*{ticketPrice}" placeholder="Enter event ticket Price" required/>
+    <br/>
+
+    <button type="submit">Create Event</button>
+</form>
+</body>
+</html>

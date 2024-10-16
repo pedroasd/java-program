@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Menu</title>
+</head>
+<body>
+<div th:fragment="menuContent">
+    <ul>
+        <li><a th:href="@{/users/new}">Create User</a></li>
+        <li><a th:href="@{/events/new}">Create Event</a></li>
+        <li><a th:href="@{/bookTicket}">Book Ticket</a></li>
+        <li><a th:href="@{/users}">Search Users</a></li>
+        <li><a th:href="@{/events}">Search Events</a></li>
+        <li><a th:href="@{/tickets/search}">Search Tickets</a></li>
+        <li><a th:href="@{/uploadTickets}">Load tickets</a></li>
+    </ul>
+</div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Refill Account</title>
+
+</head>
+<body>
+
+<div th:replace="~{menu :: menuContent}"></div>
+<h2>Refill Account</h2>
+
+<form action="#" th:action="@{/refillAccount}" method="post">
+    <input type="hidden" name="userId" th:value="${userId}" />
+
+    <label for="amount">Amount:</label>
+    <input type="number" id="amount" name="amount" step="0.01" min="0" required />
+
+    <button type="submit">Refill</button>
+</form>
+
+<div th:if="${message}" th:text="${message}"></div>
+</body>
+</html>

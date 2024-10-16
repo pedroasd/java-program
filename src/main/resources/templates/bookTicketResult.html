@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Booking Result</title>
+
+</head>
+<body>
+<div th:replace="~{menu :: menuContent}"></div>
+
+<div style="text-align: center;">
+  <h2>Booking Result</h2>
+
+  <div th:if="${message}" style="color: green;">
+    <p th:text="${message}"></p>
+  </div>
+
+  <div th:if="${error}" style="color: red;">
+    <p th:text="${error}"></p>
+  </div>
+
+  <a href="/events" class="button">Back to Events</a>
+</div>
+</body>
+</html>

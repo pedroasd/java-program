@@ -8,9 +8,9 @@ import com.pedro.model.Ticket;
 import com.pedro.model.User;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -85,5 +85,12 @@ public class TicketService {
             log.info("Ticket id: " + ticketId + " was canceled.");
             return true;
         }).orElse(false);
+    }
+
+    @Transactional
+    public void preloadTickets(List<Ticket> tickets) {
+        for (Ticket ticket : tickets) {
+            ticketDAO.save(ticket);
+        }
     }
 }

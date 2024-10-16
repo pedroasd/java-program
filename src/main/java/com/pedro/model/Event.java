@@ -18,6 +18,9 @@ public class Event {
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
+    @Transient
+    private String eventDate;
+
     @Column(name = "ticket_price")
     private Long ticketPrice;
 
@@ -66,6 +69,14 @@ public class Event {
 
     public void setTicketPrice(Long ticketPrice) {
         this.ticketPrice = ticketPrice;
+    }
+
+    public String getEventDate() {
+        return eventDate;
+    }
+
+    public void setEventDate(String eventDate) {
+        this.eventDate = eventDate;
     }
 
     @Override

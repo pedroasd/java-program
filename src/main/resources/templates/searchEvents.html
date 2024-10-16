@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Search Events</title>
+
+</head>
+<body>
+    <div th:replace="~{menu :: menuContent}"></div>
+
+    <h2>Search Events by Title</h2>
+
+    <form th:action="@{/events}" method="get">
+        <label for="title">Event Title:</label>
+        <input type="text" id="title" name="title" placeholder="Enter event title" required />
+        <button type="submit">Search</button>
+    </form>
+
+    <div th:if="${events != null}">
+        <h3 th:text="'Search Results for: ' + ${searchTitle}"></h3>
+        <ul>
+            <li th:if="${events.size()} != 0">
+                <span th:text="ID"></span> -
+                <span th:text="TITTLE"></span> -
+                <span th:text="DATE"></span> for
+                <span th:text="PRICE"></span>
+            </li>
+            <li th:each="event : ${events}">
+                <span th:text="${event.id}"></span> -
+                <span th:text="${event.title}"></span> -
+                <span th:text="${event.date}"></span> for
+                <span th:text="${event.ticketPrice}"></span>
+            </li>
+        </ul>
+        <p th:if="${events.size()} == 0">No events found.</p>
+    </div>
+</body>
+</html>

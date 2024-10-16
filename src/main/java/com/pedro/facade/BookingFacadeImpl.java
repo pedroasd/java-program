@@ -237,4 +237,13 @@ public class BookingFacadeImpl implements BookingFacade {
     public UserAccount getUserAccount(long userId) {
         return userAccountService.getUserAccount(userId);
     }
+
+    /**
+     * Load tickets in batch as a single transaction.
+     * @param tickets Ticket list to be loaded.
+     */
+    @Override
+    public void preloadTickets(List<Ticket> tickets) {
+        ticketService.preloadTickets(tickets);
+    }
 }

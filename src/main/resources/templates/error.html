@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Error</title>
+</head>
+<body>
+<div th:replace="~{menu :: menuContent}"></div>
+<h1>Error Occurred</h1>
+<p th:text="'An error occurred: ' + ${errorMessage}"></p>
+<a href="/" th:href="@{/}">Go back to home</a>
+</body>
+</html>

@@ -38,14 +38,14 @@ public class BookingTest {
 
         var eventTickets = booking.getBookedTickets(event1, 5, 1);
         assertEquals(1, eventTickets.size());
-        //assertTrue(eventTickets.contains(ticket1));
+        assertTrue(eventTickets.contains(ticket1));
 
         var isTicketCanceled = booking.cancelTicket(ticket1.getId());
         assertTrue(isTicketCanceled);
 
         userTickets = booking.getBookedTickets(user, 5, 1);
         assertEquals(1, userTickets.size());
-        //assertTrue(userTickets.contains(ticket2));
+        assertTrue(userTickets.contains(ticket2));
     }
 
     @Test

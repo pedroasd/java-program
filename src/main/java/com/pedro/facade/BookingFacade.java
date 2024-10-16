@@ -154,4 +154,10 @@ public interface BookingFacade {
      * @return User Account information
      */
     UserAccount getUserAccount(long userId);
+
+    /**
+     * Load tickets in batch as a single transaction.
+     * @param tickets Ticket list to be loaded.
+     */
+    void preloadTickets(List<Ticket> tickets);
 }
