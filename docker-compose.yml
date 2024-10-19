@@ -1,0 +1,11 @@
+version: ‘3.3’
+services:
+  activemq:
+    image: symptoma/activemq:latest
+    volumes: ["activemq-data:/opt/activemq/conf", "activemq-data:/data/activemq", "activemq-data:/var/log/activemq"]
+    ports:
+      - '8161:8161'
+      - '61616:61616'
+
+volumes:
+  activemq-data:

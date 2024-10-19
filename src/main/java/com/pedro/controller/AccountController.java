@@ -1,10 +1,10 @@
 package com.pedro.controller;
 
 import com.pedro.facade.BookingFacade;
+import com.pedro.model.UserAccount;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -14,19 +14,10 @@ public class AccountController {
     @Autowired
     private BookingFacade bookingFacade;
 
-    @GetMapping("/refillAccount")
-    public String showRefillForm(@RequestParam("userId") Long userId, Model model) {
-        model.addAttribute("userId", userId);
-        return "refillAccount";
-    }
-
     @PostMapping("/refillAccount")
-    public String refillAccount(@RequestParam("userId") Long userId,
-                                @RequestParam("amount") Long amount,
-                                Model model) {
-        bookingFacade.refillAccount(userId, amount);
-        model.addAttribute("message", "Account refilled successfully!");
-        return "refillAccount";
+    public ResponseEntity<UserAccount> refillAccount(@RequestParam("userId") Long userId,
+                                                     @RequestParam("amount") Long amount) {
+        return ResponseEntity.ok(bookingFacade.refillAccount(userId, amount));
     }
 }
 

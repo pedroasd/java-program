@@ -6,6 +6,8 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
+import com.pedro.jms.JmsProducer;
+import com.pedro.jms.TicketMessage;
 import com.pedro.model.Ticket;
 import com.pedro.facade.BookingFacade;
 import com.pedro.model.User;
@@ -18,7 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,60 +43,33 @@ public class TicketController {
     @Autowired
     private Jaxb2Marshaller jaxb2Marshaller;
 
-    // Display the form to book a ticket
-    @GetMapping("/bookTicket")
-    public String showBookingForm(Model model) {
-        model.addAttribute("ticket", new Ticket());
-        return "bookTicket";
-    }
+    @Autowired
+    private JmsProducer jmsProducer;
 
-    // Method to handle ticket booking submission
     @PostMapping("/bookTicket")
-    public String bookTicket(@RequestParam("userId") Long userId,
+    public ResponseEntity<Ticket> bookTicket(@RequestParam("userId") Long userId,
                              @RequestParam("eventId") Long eventId,
                              @RequestParam("category") String category,
-                             @RequestParam("place") Integer place,
-                             Model model) {
-        Ticket ticket = bookingFacade.bookTicket(userId, eventId, place, Ticket.Category.valueOf(category));
-        if (ticket != null) {
-            model.addAttribute("message", "Ticket booked successfully!");
-        } else {
-            model.addAttribute("error", "Failed to book ticket. Please try again.");
-        }
-
-        return "bookTicketResult";
+                             @RequestParam("place") Integer place) {
+        return ResponseEntity.ok(bookingFacade.bookTicket(userId, eventId, place, Ticket.Category.valueOf(category)));
     }
 
-    // Display the form to get booked tickets for a user
-    @GetMapping("/tickets/search")
-    public String showBookedTicketsForm() {
-        return "searchTickets";
+    @PostMapping("/book-ticket-async")
+    public ResponseEntity<Ticket> bookTicketAsync(@RequestParam("userId") Long userId,
+                                             @RequestParam("eventId") Long eventId,
+                                             @RequestParam("category") String category,
+                                             @RequestParam("place") Integer place) {
+        jmsProducer.sendBookingMessage(new TicketMessage(userId, eventId, category, place));
+        return ResponseEntity.accepted().build();
     }
 
-    // Handle the search for booked tickets
     @GetMapping("/tickets")
-    public String getBookedTickets(@RequestParam(value = "userId", required = false) Long userId, Model model) {
-        if (userId != null ) {
-            User user = bookingFacade.getUserById(userId);
-            if (user == null) {
-                model.addAttribute("message", "User doesn't exists.");
-                return "searchTickets";
-            }
-            List<Ticket> tickets = bookingFacade.getBookedTickets(user, 100, 1);
-
-            model.addAttribute("userId", userId);
-            model.addAttribute("tickets", tickets);
-            model.addAttribute("userName", user.getName());
-            return "searchTickets";
-
-        } else {
-            model.addAttribute("tickets", null);
-            model.addAttribute("userName", "");
-            return "searchTickets";
-        }
+    public ResponseEntity<List<Ticket>> getBookedTickets(@RequestParam(value = "userId") Long userId) throws Exception {
+        User user = bookingFacade.getUserById(userId);
+        if (user == null) throw new Exception("User doesn't exists.");
+        return ResponseEntity.ok(bookingFacade.getBookedTickets(user, 100, 1));
     }
 
-    // Handle the search for booked tickets
     @GetMapping(value = "/tickets", params = "downloadPdf=true")
     public ResponseEntity<?> downloadTickets(@RequestParam(value = "userId", required = false) Long userId) {
         User user = bookingFacade.getUserById(userId);
@@ -105,36 +79,20 @@ public class TicketController {
         return new ResponseEntity<>(generateTicketsPdf(tickets, user), headers, HttpStatus.OK);
     }
 
-    @GetMapping("/uploadTickets")
-    public String showUploadTickets() {
-        return "uploadTickets";
-    }
-
     @PostMapping("/uploadTickets")
-    public String uploadTickets(@RequestParam("file") MultipartFile file, Model model) {
-        if (file.isEmpty()) {
-            model.addAttribute("message", "Please select a file to upload.");
-            return "uploadTickets";
-        }
+    public ResponseEntity<?> uploadTickets(@RequestParam("file") MultipartFile file) throws Exception {
+        if (file.isEmpty()) throw new Exception("Select a file to upload.");
 
         try {
             File tempFile = File.createTempFile("tickets", ".xml");
             file.transferTo(tempFile);
 
             bookingFacade.preloadTickets(loadTicketsFile(tempFile.getAbsolutePath()));
-            model.addAttribute("message", "Tickets uploaded successfully!");
-
             tempFile.deleteOnExit();
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
-            model.addAttribute("message", "Error uploading file: " + e.getMessage());
+            throw new Exception("Error uploading file: " + e.getMessage(), e);
         }
-
-        return "uploadTickets";
-    }
-
-    @GetMapping("/testError")
-    public String testException() {
-        throw new RuntimeException("This is a test exception!");
     }
 
     private List<Ticket> loadTicketsFile(String filePath) {
